@@ -18,8 +18,6 @@ import com.bumptech.glide.Glide;
 import com.codewithsean.flixster.R;
 import com.codewithsean.flixster.models.Movie;
 
-import org.w3c.dom.Text;
-
 import java.util.List;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
