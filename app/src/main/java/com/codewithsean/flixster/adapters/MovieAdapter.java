@@ -1,6 +1,7 @@
 package com.codewithsean.flixster.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -9,16 +10,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.codewithsean.flixster.DetailActivity;
 import com.codewithsean.flixster.R;
 import com.codewithsean.flixster.models.Movie;
 
+import org.parceler.Parcels;
+
 import java.util.List;
+
+import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
 
@@ -30,7 +38,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         this.movies = movies;
     }
 
-    //Inflate an xml(movie) and return the holder inside the viewholder
+    //Inflate an xml(movie) and return the holder inside the VH
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -39,13 +47,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         return new ViewHolder(movieView);
     }
 
-    //Populates the data into the item to the viewholder
+    //Populates the data into the item to the VH
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Log.d("MovieAdapter", "onBindViewHolder " + position);
         //get movie passed into position
         Movie movie = movies.get(position);
-        //bind movie data into viewholder
+        //bind movie data into VH
         holder.bind(movie);
     }
 
@@ -57,6 +65,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
+        RelativeLayout container;
         TextView tvTitle;
         TextView tvOverview;
         ImageView ivPoster;
@@ -67,6 +76,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
             tvTitle = itemView.findViewById(R.id.tvTitle);
             tvOverview = itemView.findViewById(R.id.tvOverview);
             ivPoster = itemView.findViewById(R.id.ivPoster);
+            container = itemView.findViewById(R.id.container);
 
         }
 
@@ -76,7 +86,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
             String imageURL;
             //if phone is in landscape then imageURL = bbPath
-            //else imageURL = posterpath
+            //else imageURL = posterPath
             if(context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
                 imageURL = movie.getBackdropPath();
             }
@@ -85,7 +95,21 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
             }
 
             Glide.with(context).load(imageURL).placeholder(new ColorDrawable(Color.BLACK))
-                                .error(new ColorDrawable(Color.RED)).into(ivPoster);
+                                .error(new ColorDrawable(Color.RED))
+                        .transform(new RoundedCornersTransformation(50, 2))
+                        .into(ivPoster);
+
+            //1. register clickListener to whole container-made container variable-done
+            //2. navigate to a new activity on tap
+            container.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent i = new Intent(context, DetailActivity.class);
+                    i.putExtra("movie", Parcels.wrap(movie));
+
+                    context.startActivity(i);
+                }
+            });
 
         }
     }
